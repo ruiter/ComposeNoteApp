@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -20,9 +23,11 @@ import androidx.compose.ui.unit.dp
 import com.ruiter.composenoteapp.R
 import com.ruiter.composenoteapp.components.NoteButton
 import com.ruiter.composenoteapp.components.NoteInputText
+import com.ruiter.composenoteapp.data.NoteDataSource
+import com.ruiter.composenoteapp.model.Note
 
 @Composable
-fun NoteScreen() {
+fun NoteScreen(notes: List<Note>, onAddNote: (Note) -> Unit, onRemoveNote: (Note) -> Unit) {
 
     var title by remember {
         mutableStateOf("")
@@ -60,7 +65,20 @@ fun NoteScreen() {
                 onTextChange = {
                     if (it.all { char -> char.isLetter() || char.isWhitespace() }) description = it
                 })
-            NoteButton(text = "Save", onClick = { /*TODO*/ })
+            NoteButton(text = "Save", onClick = {
+                if (title.isNotEmpty() && description.isNotEmpty()) {
+                    title = ""
+                    description = ""
+                }
+            })
+        }
+        
+        Divider(modifier = Modifier.padding(8.dp))
+        
+        LazyColumn {
+            items(notes) {
+                Text(text = it.title)
+            }
         }
     }
 }
@@ -68,5 +86,5 @@ fun NoteScreen() {
 @Preview(showBackground = true)
 @Composable
 fun NoteScreenPreview() {
-    NoteScreen()
+    NoteScreen(notes = NoteDataSource().loadNotes(), onAddNote = {}, onRemoveNote = {})
 }
